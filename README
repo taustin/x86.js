@@ -1,0 +1,6 @@
+This is a parser for x86 assembly code.  It is written in JavaScript.
+
+Why am I doing this, you ask?  I'm planning to do some analysis of assembly code, and I do everything in JavaScript.  There is not much more to it than that.
+
+The parser is horribly incomplete at this point, and it might stay that way.  I really only intend to fix it up enough to run my analysis.  Of course, 'throw-away' projects tend to take on a life of their own sometimes...
+
