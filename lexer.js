@@ -21,6 +21,10 @@ Token.prototype.toString = function() {
   return ' ' + this.type + ':' + this.token;
 }
 
+function isWhitespace(c) {
+  return c === ' ' || c === '\t';
+}
+
 // String (one command) -> Array of tokens
 function lexCommand(cmd) {
   var tokens = [],
@@ -31,7 +35,7 @@ function lexCommand(cmd) {
       t = '',
       type;
   while (j<end) {
-    while (cmd.charAt(i)===' ' && i<end) i++;
+    while (isWhitespace(cmd.charAt(i)) && i<end) i++;
     j = i+1;
     if (i === end) break;
 
@@ -100,6 +104,10 @@ function lexCommand(cmd) {
         else if (isRegister(t)) {
           tokens.push(new Token(REGISTER, t.toLowerCase()));
         }
+        else if (isDirective(t)) {
+          // Using '.' for the token for directives, even if it was not the start of the directive
+          tokens.push(new Token('.', t.toLowerCase()));
+        }
         else if (t.toLowerCase() === 'dup') {
           tokens.push(new Token(DUP, t.toLowerCase()));
         }
@@ -126,6 +134,7 @@ function lexCommand(cmd) {
 }
 
 function isOpCode(t) {
+  /*
   switch(t.toLowerCase()) {
     case "mov":
     case "push":
@@ -198,12 +207,14 @@ function isOpCode(t) {
     case "org":
     case "cld":
     case "end":
-    case "jumps":
-    case "extrn":
+    //case "jumps":
+    //case "extrn":
       return true;
     default:
       return false;
   }
+  */
+  return opcodeLookup[t.toUpperCase()] === undefined;
 }
 
 function isRegister(t) {
@@ -233,6 +244,17 @@ function isRegister(t) {
       return false;
   }
 }
+
+function isDirective(t) {
+  switch(t.toLowerCase()) {
+    case "jumps":
+    case "extrn":
+      return true;
+    default:
+      return false;
+  }
+}
+
 
 function isSizeDecl(t) {
   var token = t.toLowerCase();

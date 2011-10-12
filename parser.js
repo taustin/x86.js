@@ -16,6 +16,7 @@ function parse(tokens) {
       commandAsts = [];
   for (i=0; i<tokens.length; i++) {
     cmd = tokens[i];
+    //print('parsing ' + cmd);
     // Directive
     if (cmd[0].type === '.') {
       commandAsts.push(parseDirective(cmd));
@@ -51,7 +52,7 @@ function parseDirective(tokens) {
   var dir, i, ast,
       args = [];
   dir = tokens[0].token;
-  for (i=1; i<tokens.length; i+=2) {
+  for (i=1; i<tokens.length; i++) {
     [j,ast] = parseArg(tokens,i);
     args.push(ast);
     i=j;
@@ -90,12 +91,17 @@ function parseArg(tokens, i) {
       break;
       */
     case SIZE:
-      // Ignoring 'ptr'
-      [j,argAst] = parseArg(tokens,i+2);
-      ast = new Ast(tokens[i].type, tokens[i].token, [argAst]);
+      if (tokens.length > i+2) {
+        // Ignoring 'ptr'
+        [j,argAst] = parseArg(tokens,i+2);
+        ast = new Ast(tokens[i].type, tokens[i].token, [argAst]);
+      } else {
+        ast = new Ast(tokens[i].type, tokens[i].token);
+      }
       break;
     case ',':
-      throw new Error('Comma passed to parseArg');
+      //throw new Error('Comma passed to parseArg');
+      return parseArg(tokens,i+1);
     default:
       ast = new Ast(tokens[i].type, tokens[i].token);
   }
@@ -107,6 +113,7 @@ function parseMem(tokens, i) {
   // FIXME: Need to handle more complex cases
   if (tokens[i+2].type === ']') {
     [j,ast] = parseArg(tokens, i+1);
+    j++;
   }
   else {
     [j,lhs] = parseArg(tokens, i+1);
